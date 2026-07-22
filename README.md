@@ -227,7 +227,7 @@ The GitHub repo includes all the artifacts needed to complete this lab on your l
         mkdir /home/itzuser/Student
         cd /home/itzuser/Student
        
-        git clone https://github.com/kpostreich/m2m-ws-sample
+        git clone https://github.com/LarsBesselmann/LibertyGettingStarted-2026-SampleApps
 
     <kbd>![](./images/media/image19.png)</kbd>
 
