@@ -7,7 +7,7 @@
     analyze a Java EE monolith and transform it to Microservices
 
   - Learn how to build and run the transformed microservices in
-    containers using Docker and Open Liberty
+    containers using podman and Open Liberty
 
 ## 2. Prerequisites
 
@@ -16,10 +16,10 @@ lab if running the lab using your own environment. Refer to **Appendix
 C** if you want to run the lab using your own environment, as it details
 the minimal changes to the lab instructions. 
 
-  - 3 GB free storage for the Mono2Micro Docker images and containerized
+  - 3 GB free storage for the Mono2Micro podman images and containerized
     microservices
 
-  - Docker 24.0.7 CE or higher, which supports multi-stage builds
+  - podman 24.0.7 CE or higher, which supports multi-stage builds
 
   - Git CLI (needed to clone the GitHub repo)
 
@@ -27,7 +27,7 @@ the minimal changes to the lab instructions.
 
   - Maven 3.9.5
 
-  - Internet connectivity with access to dockerhub and maven-central
+  - Internet connectivity with access to podmanhub and maven-central
 
   - Understanding of command line for your environment
 
@@ -203,7 +203,7 @@ Structure of the m2m-ws-sample GitHub repository: (details in the README within 
 The GitHub repo includes all the artifacts needed to complete this lab on your local workstation.
 
   - The DefaultApplication Source Code
-  - The newly constructed dockerfiles to build and run the microservices in containers
+  - The newly constructed podmanfiles to build and run the microservices in containers
   - The updated POM files that have been reduced to contain only the
     resources needed for the individual microservice
 
@@ -305,7 +305,7 @@ In this section of the lab, you will download and install the mono2micro command
     <kbd>![](./images/media/mono2micro-install-help.png)</kbd>
  
 
-5.  Run the Mono2Micro **install command,** selecting Docker as the container engine:
+5.  Run the Mono2Micro **install command,** selecting podman as the container engine:
 
         ./mono2micro install -c podman
     You need to choose option **`1`** to accept the license:
@@ -1293,7 +1293,7 @@ In Part 3 of the lab, you will:
     a.  Move the static and non-Java artifacts from the monolith application into the individual microservices
     
     b.  Refactor the minimal set of artifacts so that the transformed microservices will compile and run in OpenLiberty server in
-        Docker containers.
+        podman containers.
 
     ![](./images/media/image7.svg)
 
@@ -1362,7 +1362,7 @@ The code generator requires the following input artifacts and is referenced in t
  
     Note that as part of the partitions created with the Java files, the code generator also creates, for each partition:
 
-    - a starter Dockerfile
+    - a starter podmanfile
   
     - a Liberty Maven plugin enabled POM configuration file (pom.xml)
   
@@ -1508,7 +1508,7 @@ One approach that you will follow for the DefaultApplication example and highly 
     ejb-jar.xml, persistence.xml etc) to \*every\* partition, following the same directory structure which will partially already exist in
     each partition.
 
-    At this point it is important to mention that the code generator also creates a starter Dockerfile, a Liberty Maven plugin enabled POM configuration file (pom.xml), and a server configuration file  (server.xml) as part of code generation to accelerate the mplementing  and running of partitions on WebSphere® Liberty. However, just as a rough simplification for this workshop, we will just copy and paste  all existing files from the original monolith.
+    At this point it is important to mention that the code generator also creates a starter podmanfile, a Liberty Maven plugin enabled POM configuration file (pom.xml), and a server configuration file  (server.xml) as part of code generation to accelerate the mplementing  and running of partitions on WebSphere® Liberty. However, just as a rough simplification for this workshop, we will just copy and paste  all existing files from the original monolith.
 
 2.  Starting with that as a base, the aim then is to pare down and incrementally reduce the content of all these files (based on
     knowledge of what functionality each partition entails, and/or through an iterative compile-run-debug process), ending up with just
@@ -1612,11 +1612,11 @@ At this point, every partition contains all the Java and non-Java files necessar
 Starting with that as a base, the next step is to pare down and incrementally reduce the content of all these files, ending up with just
 the needed content in each partition to build and run the microservice.
 
-In this lab, you will focus only on the refactoring that is required for the partitions to compile and run in Docker containers. An iterative for
+In this lab, you will focus only on the refactoring that is required for the partitions to compile and run in podman containers. An iterative for
 further paring down the content is beyond the scope of this lab.
 
 To simplify the refactoring activities for this lab, a shell script has been provided that performs the refactoring required such that each
-partition (microservice) will compile and run on their own Liberty Server in separate Docker containers.
+partition (microservice) will compile and run on their own Liberty Server in separate podman containers.
 
 **The script performs the following tasks for the web partition:**
 
@@ -1632,7 +1632,7 @@ partition (microservice) will compile and run on their own Liberty Server in sep
 
   - Update Liberty **server.xml** file to remove database / datasource configuration
 
-  - Add a **dockerfile** to build the Microservice and Docker image running on Liberty
+  - Add a **podmanfile** to build the Microservice and podman image running on Liberty
 
 **The script performs the following tasks for the partition0 partition:**
 
@@ -1658,7 +1658,7 @@ partition (microservice) will compile and run on their own Liberty Server in sep
     
       - This works around a known issue with conflicting import statements in the Java file
 
-  - Add a **dockerfile** to build the Microservice and Docker image running on Liberty
+  - Add a **podmanfile** to build the Microservice and podman image running on Liberty
 
     <br/>  
 
@@ -1697,26 +1697,26 @@ partition (microservice) will compile and run on their own Liberty Server in sep
 **3.4.3 Deploy Partitions as Containerized Microservices**
 
 To portably run the builds of all the partitions, and at the same time
-prepare them for containerization, you can use Docker based builds right
+prepare them for containerization, you can use podman based builds right
 from the start.
 
-Let’s create a multi-stage dockerfile for each partition:
+Let’s create a multi-stage podmanfile for each partition:
 
   - Stage 1: Performs the Maven build and packaging of the deployable
     artifacts (WAR, EAR, JAR)
 
-  - Stage 2: Creates the Docker image from OpenLiberty, and adds the
+  - Stage 2: Creates the podman image from OpenLiberty, and adds the
     application, server configuration, and other configurations required
     for the partitions (Derby DB config)
 
-    The dockerfile is slightly different for each partition since each partition will require unique configurations for its Microservice.
+    The podmanfile is slightly different for each partition since each partition will require unique configurations for its Microservice.
 
     <br/>
 
-1.  Navigate to the **Dockerfile** in the **web** **partition** to view
+1.  Navigate to the **podmanfile** in the **web** **partition** to view
     this update.
 
-        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-web/Dockerfile
+        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-web/podmanfile
 
     <kbd>![](./images/media/image92.png)</kbd>
  
@@ -1726,14 +1726,14 @@ Let’s create a multi-stage dockerfile for each partition:
 
     **Production Image stage:**
 
-    - Pulls the Universal base Image (UBI) of Open-Liberty Docker image from Dockerhub. The Universal Base Image is the supported images
+    - Pulls the Universal base Image (UBI) of Open-Liberty podman image from podmanhub. The Universal Base Image is the supported images
     when deploying to RedHat OpenShift.
 
     - Copy the EAR to the Liberty apps directory, where Liberty will automatically start when the container is started.
 
     - Copy the Liberty server configuration file to Liberty config directory, which is used to configure the Liberty runtime.
 
-    - As root user, curl is installed as a tool for helping to debug connectivity between Docker containers. This is not required.
+    - As root user, curl is installed as a tool for helping to debug connectivity between podman containers. This is not required.
 
     - As root user, update the permissions on the shared resources folder in Liberty
 
@@ -1751,28 +1751,28 @@ Let’s create a multi-stage dockerfile for each partition:
 
     > ENV  APPLICATION\_PARTITION0\_REST\_URL=http://defaultapp-partition0:9080/rest/
 
-    - When running in Docker, a docker network must be set up so that  all partitions can communicate with each other. Yu did this in the  lab.
+    - When running in podman, a podman network must be set up so that  all partitions can communicate with each other. Yu did this in the  lab.
 
     -  All partitions in this lab use port 9080 internally within the
-     Docker environment, but expose themselves on separate ports
+     podman environment, but expose themselves on separate ports
      externally to the host machine
 
     -  Using this scheme as a base, a Kubernetes deployment can be set up
      on a cluster where each container acts a **Kubernetes service**
 
-    When running in Docker, the **hostname** must match the “**Name**” of  the container as known in the Docker Network.
+    When running in podman, the **hostname** must match the “**Name**” of  the container as known in the podman Network.
 
-    -  Use command: “**docker network list”** to see the list of docker networks
+    -  Use command: “**podman network list”** to see the list of podman networks
     
-    -  Use command: “**docker network inspect \<NETWORKNAME\>”** to     see the container names in the Docker network.
+    -  Use command: “**podman network inspect \<NETWORKNAME\>”** to     see the container names in the podman network.
 
-     > Where \<NETWORKNAME\> is the name of the Docker network to  inspect
+     > Where \<NETWORKNAME\> is the name of the podman network to  inspect
  
     <kbd>![](./images/media/image93.png)</kbd>
 
-2.  Navigate to the **Dockerfile** in the **partition0 partition** to view this update.
+2.  Navigate to the **podmanfile** in the **partition0 partition** to view this update.
 
-        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-partition0/Dockerfile
+        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-partition0/podmanfile
 
     **Build Image stage:**
 
@@ -1833,28 +1833,28 @@ and observe any compilation errors.
 
     <kbd>![](./images/media/image96.png)</kbd>
 
-At this point in the lab. you are ready to build and run the DefaultApplication as microservices in containers using Docker. The
+At this point in the lab. you are ready to build and run the DefaultApplication as microservices in containers using podman. The
 microservices were transformed using Mono2Micro, using resources we provided in the Git Repo.
 
-# **PART 4 (OPTIONAL) Build and run the Transformed Java Microservices Using Docker**
+# **PART 4 (OPTIONAL) Build and run the Transformed Java Microservices Using podman**
 
-The goal of this section is to let you build and deploy the transformed Microservices to Docker containers and see the working state of the
+The goal of this section is to let you build and deploy the transformed Microservices to podman containers and see the working state of the
 transformation process yourself.
 
 **Objectives**
 
-  - See the transformed monolith application running as independent microservices on OpenLiberty in separate Docker containers, before
+  - See the transformed monolith application running as independent microservices on OpenLiberty in separate podman containers, before
     you use Mono2Micro to transform the monolith in this lab.
 
-  - Learn how to build and run the transformed microservices with Docker and OpenLiberty
+  - Learn how to build and run the transformed microservices with podman and OpenLiberty
 
 **The basic steps in this section of the lab include:**
 
-  - Using Docker, build the two transformed microservices for the application
+  - Using podman, build the two transformed microservices for the application
 
-  - Setup a local Docker Network for the local docker containers to communicate
+  - Setup a local podman Network for the local podman containers to communicate
 
-  - Start the docker containers and run the microservices based application
+  - Start the podman containers and run the microservices based application
 
   - View the microservices logs to see the communication and data flowing between the services as you test the application from a web
     browser
@@ -1879,15 +1879,15 @@ transformation process yourself.
  
     <kbd>![](./images/media/image98.png)</kbd>
 
-2.  Create a **Docker Network** for the two containers to communicate
+2.  Create a **podman Network** for the two containers to communicate
 
-    You will use Docker to build and run the microservices based  application. For the Docker containers to communicate, a local Docker  network is required.
+    You will use podman to build and run the microservices based  application. For the podman containers to communicate, a local podman  network is required.
  
-    **Tip:** Later, when you launch the Docker containers, you will  specify the network for the containers to join, as command line  options.
+    **Tip:** Later, when you launch the podman containers, you will  specify the network for the containers to join, as command line  options.
 
-        docker network create defaultappNetwork
+        podman network create defaultappNetwork
 
-        docker network list
+        podman network list
 
     <kbd>![](./images/media/image99.png)</kbd>
 
@@ -1900,22 +1900,22 @@ transformation process yourself.
 
     This container is the web front end service. It contains the html,  jsp, and servlets.
  
-    The **defaultapp-web** folder contains the Dockerfile used to build  the front-end microservice.
+    The **defaultapp-web** folder contains the podmanfile used to build  the front-end microservice.
 
         cd /home/itzuser/Student/m2m-ws-sample/defaultapplication/microservices/defaultapp-web
 
-        docker build -t defaultapp-web . | tee web.out
+        podman build -t defaultapp-web . | tee web.out
 
 
-    The dockerfile performs these basic tasks:
+    The podmanfile performs these basic tasks:
 
     - Uses the projects pom.xml file to do a Maven build, which produces the deployable EAR.
 
-    - Copies the EAR file and OpenLiberty Server configuration file to the appropriate location in the Docker container for the microservice to start once the container is started.
+    - Copies the EAR file and OpenLiberty Server configuration file to the appropriate location in the podman container for the microservice to start once the container is started.
 
     <kbd>![](./images/media/image100.png)</kbd>
 
-4.  Start the **partition-web (front-end)** docker container
+4.  Start the **partition-web (front-end)** podman container
 
     Notice the command line options that are required for the microservice to run properly.
 
@@ -1925,9 +1925,9 @@ transformation process yourself.
     - The container must be included in the **defaultappNetwork** that you defined earlier. The back-end microservice will also join this
     network allowing the services to communicate with one another.
 
-          docker run --name=defaultapp-web --hostname=defaultapp-web --network=defaultappNetwork -d -p 9095:9080 defaultapp-web:latest
+          podman run --name=defaultapp-web --hostname=defaultapp-web --network=defaultappNetwork -d -p 9095:9080 defaultapp-web:latest
 
-          docker ps | grep defaultapp
+          podman ps | grep defaultapp
 
     **Note:** The application is exposed on port **9095** and running on port 9080 in the container.
 
@@ -1942,24 +1942,24 @@ transformation process yourself.
     > /home/itzuser/Student/m2m-ws-sample/defaultapplication/microservices/defaultapp-partition0
 
  
-    The **default-partition0** folder contains the dockerfile used to  build the back-end microservice.
+    The **default-partition0** folder contains the podmanfile used to  build the back-end microservice.
 
         cd /home/itzuser/Student/m2m-ws-sample/defaultapplication/microservices/defaultapp-partition0
 
-        docker build -t defaultapp-partition0 . | tee partition0.out
+        podman build -t defaultapp-partition0 . | tee partition0.out
 
-    **The dockerfile performs these basic tasks:**
+    **The podmanfile performs these basic tasks:**
 
     - Uses the projects pom.xml file to do a Maven build, which produces the deployable EAR.
 
-    - Copies the EAR file and OpenLiberty Server configuration file to the appropriate location in the Docker container for the microservice to
+    - Copies the EAR file and OpenLiberty Server configuration file to the appropriate location in the podman container for the microservice to
     start once the container is started.
 
     - Copies the Derby Database library and database files to the container
 
     <kbd>![](./images/media/image102.png)</kbd>
 
-6.  Start the **partition-partition0 (back-end)** docker container
+6.  Start the **partition-partition0 (back-end)** podman container
 
     Notice the command line options that are required for the microservice to run properly.
 
@@ -1968,58 +1968,58 @@ transformation process yourself.
 
     - The container must be included in the **defaultappNetwork** that you defined earlier.
 
-          docker run --name=defaultapp-partition0 --hostname=defaultapp-partition0 --network=defaultappNetwork -d -p 9096:9080 defaultapp-partition0:latest
+          podman run --name=defaultapp-partition0 --hostname=defaultapp-partition0 --network=defaultappNetwork -d -p 9096:9080 defaultapp-partition0:latest
 
-          docker ps | grep defaultapp-partition0
+          podman ps | grep defaultapp-partition0
 
     <kbd>![](./images/media/image103.png)</kbd>
  
     **Note:** The application is exposed on port **9096** and running on port 9080 in the container
 
-7.  Inspect Docker’s **defaultappNetwork** and ensure both microservices are joined in the network
+7.  Inspect podman’s **defaultappNetwork** and ensure both microservices are joined in the network
 
-        docker inspect defaultappNetwork
+        podman inspect defaultappNetwork
 
     <kbd>![](./images/media/image104.png)</kbd>
  
-    The microservices are now running on separate OpenLiberty servers in the local Docker environment.
+    The microservices are now running on separate OpenLiberty servers in the local podman environment.
  
     In the next section, you will test the microservices application from a web browser.
 
 
 ## 4.1 (OPTIONAL) View the OpenLiberty Server logs for the microservices
 
-At this point, the microservices should be up and running inside of their respective docker containers.
+At this point, the microservices should be up and running inside of their respective podman containers.
  
 First, you will look at the OpenLiberty server logs for both microservices to ensure the server and application started
  successfully.
 
-1.  View the server log in the **partition-web (front-end)** docker container
+1.  View the server log in the **partition-web (front-end)** podman container
     
     a.  Open a new Terminal window
     
     b.  Run the following command to view the OpenLiberty Server log in the defaultapp-web container
 
-        docker logs defaultapp-web
+        podman logs defaultapp-web
 
     You should see messages indicating the DefaultApplication and the  defaultServer have been successfully started and is running.
 
     <kbd>![](./images/media/image105.png)</kbd>
 
 
-2.  View the server log in the **partition-partition0 (back-end)** docker container
+2.  View the server log in the **partition-partition0 (back-end)** podman container
     
     a.  Open a new Terminal window
     
     b.  Run the following command to view the OpenLiberty Server log  in the defaultapp-partition0 container
 
-        docker logs defaultapp-partition0
+        podman logs defaultapp-partition0
 
     You should see messages indicating the DefaultApplication and the  defaultServer have been successfully started and is running.
 
     <kbd>![](./images/media/image106.png)</kbd>
 
-## 4.2 Test the microservices from your local Docker environment
+## 4.2 Test the microservices from your local podman environment
 
 Once all the containers have started successfully, the  DefaultApplication can be opened at <http://localhost:9095/>
  
@@ -2111,9 +2111,9 @@ in the server log files. This is expected behavior.
 
     In this case, the front-end microservice does call the back-end microservice, and you will see relevant messages in their corresponding log files.
 
-        docker logs defaultapp-web
+        podman logs defaultapp-web
 
-        docker logs defaultapp-partition0
+        podman logs defaultapp-partition0
 
         
     **Output from defaultapp-web container**
@@ -2129,7 +2129,7 @@ in the server log files. This is expected behavior.
 
     **You have successfully built run the DefaultApplication that was  transformed using the IBM Mono2Micro.**
  
-    The converted application has also been deployed locally in Docker  containers running OpenLiberty Server, which is ideally suited for  Java based microservices and cloud deployments.
+    The converted application has also been deployed locally in podman  containers running OpenLiberty Server, which is ideally suited for  Java based microservices and cloud deployments.
  
     Now that you have seen the transformed application in action, it is  time to use Mono2Micro and perform the steps that produced the  transformed microservices.
 
@@ -2140,7 +2140,7 @@ in the server log files. This is expected behavior.
 
 In this lab, you gained significant hands-on experience using Mono2Micro in a full end-to-end flow.
 
-You started by building and running the final transformed microservices based application in Docker containers running on Liberty server.
+You started by building and running the final transformed microservices based application in podman containers running on Liberty server.
 
 Then, you started from the beginning with a Java EE monolith application, using the AI-driven Mono2Micro tools to analyze it and
 recommend the different ways it can be partitioned for potential microservices.
