@@ -396,11 +396,7 @@ Let’s begin with the build of the .ear file and then the static data collectio
 
     command output:
 
-        -rw-r--r--  1 staff    199 17 Apr 13:53 instrumenter-config.json
-        -rw-r--r--  1 staff    193 17 Apr 13:53 recommender-config.properties
-        -rw-r--r--  1 staff   1449 17 Apr 13:53 refTable.json
-        -rw-r--r--  1 staff  13721 17 Apr 13:53 symTable.json
- 
+    <kbd>![mono2micro-analyze-output](./images/media/mono2micro-analyze-output.png)</kbd> 
 
     The code analyzer creates a directory with a "-mono2micro" extension. The directory contains 3 json files and 1 properties file. 
 
