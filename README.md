@@ -307,7 +307,7 @@ In this section of the lab, you will download and install the mono2micro command
 
 5.  Run the Mono2Micro **install command,** selecting Docker as the container engine:
 
-        ./mono2micro install -c docker
+        ./mono2micro install -c podman
     You need to choose option **`1`** to accept the license:
     <kbd>![](./images/media/mono2micro-install.png)</kbd>
 
@@ -333,7 +333,7 @@ Let’s begin with the build of the .ear file and then the static data collectio
 
     Adjust the sample package to use the IBM Semeru Java 8 SDK for Liberty.
 
-        echo "JAVA_HOME=/home/itzuser/jdk8u402-b06/jre" > /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith/DefaultApplication-ear/src/main/liberty/config/server.env
+        echo "JAVA_HOME=/usr/lib/jvm/ibm-semeru-open-8-jdk/jre" > /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith/DefaultApplication-ear/src/main/liberty/config/server.env
 
 
     Change to the directory location of the application code, and run the maven build.
