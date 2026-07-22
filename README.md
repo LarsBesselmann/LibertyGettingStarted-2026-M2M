@@ -229,7 +229,7 @@ The GitHub repo includes all the artifacts needed to complete this lab on your l
        
         git clone https://github.com/LarsBesselmann/m2m-ws-sample
 
-    <kbd>![](./images/media/image19.png)</kbd>
+    <kbd>![git_clone.png](./images/media/git_clone.png)</kbd>
 
 2.  Change to the workshop directory that contains the cloned repository artifacts. Then list the directory contents.
 
@@ -237,6 +237,7 @@ The GitHub repo includes all the artifacts needed to complete this lab on your l
 
         ls -l
 
+    <kbd>![m2m-ws-sample.png](./images/media/m2m-ws-sample.png)</kbd>
 
 
 # **PART 2 Use Mono2Micro to analyze the Java EE monolith application and recommend partitions**
