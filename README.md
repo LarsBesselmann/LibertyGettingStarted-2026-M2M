@@ -203,7 +203,7 @@ Structure of the m2m-ws-sample GitHub repository: (details in the README within 
 The GitHub repo includes all the artifacts needed to complete this lab on your local workstation.
 
   - The DefaultApplication Source Code
-  - The newly constructed podmanfiles to build and run the microservices in containers
+  - The newly constructed Dockerfiles to build and run the microservices in containers
   - The updated POM files that have been reduced to contain only the
     resources needed for the individual microservice
 
@@ -1362,7 +1362,7 @@ The code generator requires the following input artifacts and is referenced in t
  
     Note that as part of the partitions created with the Java files, the code generator also creates, for each partition:
 
-    - a starter podmanfile
+    - a starter Dockerfile
   
     - a Liberty Maven plugin enabled POM configuration file (pom.xml)
   
@@ -1508,7 +1508,7 @@ One approach that you will follow for the DefaultApplication example and highly 
     ejb-jar.xml, persistence.xml etc) to \*every\* partition, following the same directory structure which will partially already exist in
     each partition.
 
-    At this point it is important to mention that the code generator also creates a starter podmanfile, a Liberty Maven plugin enabled POM configuration file (pom.xml), and a server configuration file  (server.xml) as part of code generation to accelerate the mplementing  and running of partitions on WebSphere® Liberty. However, just as a rough simplification for this workshop, we will just copy and paste  all existing files from the original monolith.
+    At this point it is important to mention that the code generator also creates a starter Dockerfile, a Liberty Maven plugin enabled POM configuration file (pom.xml), and a server configuration file  (server.xml) as part of code generation to accelerate the mplementing  and running of partitions on WebSphere® Liberty. However, just as a rough simplification for this workshop, we will just copy and paste  all existing files from the original monolith.
 
 2.  Starting with that as a base, the aim then is to pare down and incrementally reduce the content of all these files (based on
     knowledge of what functionality each partition entails, and/or through an iterative compile-run-debug process), ending up with just
@@ -1632,7 +1632,7 @@ partition (microservice) will compile and run on their own Liberty Server in sep
 
   - Update Liberty **server.xml** file to remove database / datasource configuration
 
-  - Add a **podmanfile** to build the Microservice and podman image running on Liberty
+  - Add a **Dockerfile** to build the Microservice and podman image running on Liberty
 
 **The script performs the following tasks for the partition0 partition:**
 
@@ -1658,7 +1658,7 @@ partition (microservice) will compile and run on their own Liberty Server in sep
     
       - This works around a known issue with conflicting import statements in the Java file
 
-  - Add a **podmanfile** to build the Microservice and podman image running on Liberty
+  - Add a **Dockerfile** to build the Microservice and podman image running on Liberty
 
     <br/>  
 
@@ -1700,7 +1700,7 @@ To portably run the builds of all the partitions, and at the same time
 prepare them for containerization, you can use podman based builds right
 from the start.
 
-Let’s create a multi-stage podmanfile for each partition:
+Let’s create a multi-stage Dockerfile for each partition:
 
   - Stage 1: Performs the Maven build and packaging of the deployable
     artifacts (WAR, EAR, JAR)
@@ -1709,14 +1709,14 @@ Let’s create a multi-stage podmanfile for each partition:
     application, server configuration, and other configurations required
     for the partitions (Derby DB config)
 
-    The podmanfile is slightly different for each partition since each partition will require unique configurations for its Microservice.
+    The Dockerfile is slightly different for each partition since each partition will require unique configurations for its Microservice.
 
     <br/>
 
-1.  Navigate to the **podmanfile** in the **web** **partition** to view
+1.  Navigate to the **Dockerfile** in the **web** **partition** to view
     this update.
 
-        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-web/podmanfile
+        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-web/Dockerfile
 
     <kbd>![](./images/media/image92.png)</kbd>
  
@@ -1770,9 +1770,9 @@ Let’s create a multi-stage podmanfile for each partition:
  
     <kbd>![](./images/media/image93.png)</kbd>
 
-2.  Navigate to the **podmanfile** in the **partition0 partition** to view this update.
+2.  Navigate to the **Dockerfile** in the **partition0 partition** to view this update.
 
-        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-partition0/podmanfile
+        gedit /home/itzuser/Student/m2m-ws-sample/defaultapplication/monolith-partition0/Dockerfile
 
     **Build Image stage:**
 
@@ -1900,14 +1900,14 @@ transformation process yourself.
 
     This container is the web front end service. It contains the html,  jsp, and servlets.
  
-    The **defaultapp-web** folder contains the podmanfile used to build  the front-end microservice.
+    The **defaultapp-web** folder contains the Dockerfile used to build  the front-end microservice.
 
         cd /home/itzuser/Student/m2m-ws-sample/defaultapplication/microservices/defaultapp-web
 
         podman build -t defaultapp-web . | tee web.out
 
 
-    The podmanfile performs these basic tasks:
+    The Dockerfile performs these basic tasks:
 
     - Uses the projects pom.xml file to do a Maven build, which produces the deployable EAR.
 
@@ -1942,13 +1942,13 @@ transformation process yourself.
     > /home/itzuser/Student/m2m-ws-sample/defaultapplication/microservices/defaultapp-partition0
 
  
-    The **default-partition0** folder contains the podmanfile used to  build the back-end microservice.
+    The **default-partition0** folder contains the Dockerfile used to  build the back-end microservice.
 
         cd /home/itzuser/Student/m2m-ws-sample/defaultapplication/microservices/defaultapp-partition0
 
         podman build -t defaultapp-partition0 . | tee partition0.out
 
-    **The podmanfile performs these basic tasks:**
+    **The Dockerfile performs these basic tasks:**
 
     - Uses the projects pom.xml file to do a Maven build, which produces the deployable EAR.
 
