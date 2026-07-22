@@ -233,7 +233,7 @@ The GitHub repo includes all the artifacts needed to complete this lab on your l
 
 2.  Change to the workshop directory that contains the cloned repository artifacts. Then list the directory contents.
 
-        cd LibertyGettingStarted-2026-SampleApps/m2m-ws-sample m2m-ws-sample
+        cd LibertyGettingStarted-2026-SampleApps/m2m-ws-sample
         ls -l
 
     <kbd>![m2m-ws-sample](./images/media/m2m-ws-sample.png)</kbd>
